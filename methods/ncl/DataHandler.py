@@ -10,14 +10,12 @@ import torch.utils.data as dataloader
 
 class DataHandler:
 	def __init__(self):
-		if args.data == 'yelp':
+		if args.data == 'sp_yelp':
 			predir = '../../Datasets/sparse_yelp/'
-		elif args.data == 'gowalla':
+		elif args.data == 'sp_gowalla':
 			predir = '../../Datasets/sparse_gowalla/'
-		elif args.data == 'amazon':
+		elif args.data == 'sp_amazon':
 			predir = '../../Datasets/sparse_amazon/'
-		elif args.data.startswith('god'):
-			predir = '/home/akaxia/data/sparse datasets/sparse_gowalla_dist' + args.data[-1] + '/'
 		self.predir = predir
 		self.trnfile = predir + 'trnMat.pkl'
 		self.tstfile = predir + 'tstMat.pkl'

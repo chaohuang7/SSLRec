@@ -10,12 +10,12 @@ import torch.utils.data as dataloader
 
 class DataHandler:
 	def __init__(self):
-		if args.data == 'sp_yelp':
-			predir = '../../Datasets/sparse_yelp/'
-		elif args.data == 'sp_gowalla':
-			predir = '../../Datasets/sparse_gowalla/'
-		elif args.data == 'sp_amazon':
-			predir = '../../Datasets/sparse_amazon/'
+		if args.data == 'yelp':
+			predir = '../../Datasets/yelp/'
+		elif args.data == 'amazon':
+			predir = '../../Datasets/amazon/'
+		elif args.data == 'ml10m':
+			predir = '../../Datasets/ml10m/'
 		self.predir = predir
 		self.trnfile = predir + 'trnMat.pkl'
 		self.tstfile = predir + 'tstMat.pkl'
@@ -49,35 +49,12 @@ class DataHandler:
 		shape = t.Size(mat.shape)
 		return t.sparse.FloatTensor(idxs, vals, shape).cuda()
 
-	def filter4SparseTest(self, trnMat, tstMat, usr=True):
-		stat = np.squeeze(np.array(np.sum(trnMat != 0, axis=-1 if usr else 0)))
-		idct = (stat >= 30) * (stat < 40)
-		pckNodeSet = set(np.squeeze(np.argwhere(idct)))
-		print(len(pckNodeSet))
-		def filterTst(tstMat, pckNodeSet, usr=True):
-			row = tstMat.row
-			col = tstMat.col
-			data = tstMat.data
-			newRow = []
-			newCol = []
-			newData = []
-			rowOrCol = row if usr else col
-			for i, elem in enumerate(rowOrCol):
-				if elem in pckNodeSet:
-					newRow.append(row[i])
-					newCol.append(col[i])
-					newData.append(data[i])
-			return coo_matrix((newData, (newRow, newCol)), shape=tstMat.shape)
-		return filterTst(tstMat, pckNodeSet, usr)
-
 	def LoadData(self):
 		trnMat = self.loadOneFile(self.trnfile)
 		tstMat = self.loadOneFile(self.tstfile)
-		self.trnMat = trnMat
-		# tstMat = self.filter4SparseTest(trnMat, tstMat, False)
-		# print('Num of tst entries', np.sum(tstMat!=0))
 		args.user, args.item = trnMat.shape
 		self.torchBiAdj = self.makeTorchAdj(trnMat)
+		
 		trnData = TrnData(trnMat)
 		self.trnLoader = dataloader.DataLoader(trnData, batch_size=args.batch, shuffle=True, num_workers=0)
 		tstData = TstData(tstMat, trnMat)
