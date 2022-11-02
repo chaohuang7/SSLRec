@@ -1,0 +1,1 @@
+If you run HCCF on a sparse dataset, we suggest you consider using the simplified version `Model_sparse.py`. Additionally, an important trick for this version is to set `args.mult` a small value (e.g. 1e-2, 1e-1), to manually decrease the embedding magnitude of hypergraph NN in the simplified version.
